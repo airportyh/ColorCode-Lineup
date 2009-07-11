@@ -23,7 +23,7 @@
       display: block;
       border: 3px dashed black;
       min-height: 2em;
-      width: 100%;
+      width: 84%;
       float: left;
     }
     ul li{
@@ -31,6 +31,7 @@
       margin: 0;
       float: left;
       cursor: default;
+      border: 1px solid #000;
     }
     ul li span{
       padding: 0 0.5em;
@@ -43,6 +44,17 @@
     }
     .clear{
       clear: both;
+    }
+    #trashCan{
+      float: left;
+      width: 10%;
+      height: 3em;
+      margin-left: 5px;
+      background-color: #a3c5ac;
+    }
+    #trashCan h3{
+      padding: 0;
+      margin: 0;
     }
     #output{
       padding: 1em;
@@ -102,11 +114,14 @@
         .text('[\n' + colors.map(function(color){ return "0x" + color; }).join(', \n') + '\n]')
       
     }
+    function colorForSpan(span){
+      return span.getAttribute('style')
+        .match(/background-color: #(.{6})/)[1];
+    }
     function colorsFromLi(){
       return $.makeArray($('#colorList li span').map(function(){
-        return this.getAttribute('style')
-          .match(/background-color: #(.{6})/)[1];
-        }))
+        return colorForSpan(this)
+      }))
     }
     function renderColorList(){
       $('#colorList')
@@ -173,6 +188,15 @@
         }
         renderColorList()
       })
+      $('#trashCan').droppable({
+        drop: function(e, ui){
+          var elm = e.srcElement
+          var color = colorForSpan(elm)
+          colors = colors.filter(function(c){ return c != color; })
+          
+          renderColorList()
+        }
+      })
     })
     --></script>
   </head>
@@ -211,9 +235,12 @@
     </div>
     <ul id="colorList">
     </ul>
+    <div id="trashCan">
+      <h3>Trash</h3>
+    </div>
     <div class="clear"></div>
     <p class="info">Drag and drop to rearrange the color lineup. Or you can
-      <button id="shuffle">Shuffle</button>
+      <button id="shuffle">Shuffle</button>.
     </p>
     
     <pre id="output"></pre>
