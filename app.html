@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>ColorCode Lineup</title>
+    <link href="jquery-ui/css/ui-lightness/jquery-ui-1.7.2.custom.css" type="text/css" rel="stylesheet" media="screen">
+    <link href="jPicker/css/jPicker-1.0.8.css" type="text/css" rel="stylesheet" media="screen">
+    
+    <style type="text/css">
+    html, body{
+      font-family: Arial;
+    }
+    html{
+      margin: 0;
+      padding: 0;
+    }
+    body{
+      padding: 1em;
+    }
+    ul{
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: block;
+      border: 3px dashed black;
+      min-height: 2em;
+      width: 100%;
+      float: left;
+    }
+    ul li{
+      padding: 0;
+      margin: 0;
+      float: left;
+    }
+    ul li span{
+      padding: 0 0.5em;
+      display: block;
+      text-align: center;
+      font-size: 1em;
+    }
+    #controls{
+      padding: 0 0.5em;
+    }
+    </style>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="ecma5array.js"></script>
+    <script type="text/javascript" src="jquery-ui/js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="jPicker/jpicker-1.0.8.min.js"></script>
+    <script type="text/javascript"><!--
+    
+    var colors = [
+            'CC2B2B',
+            '953F95',
+            '285795',
+            '1CA998',
+            '0C9314',
+            'A8A80A',
+            'EF8601',
+            '9F6B62',
+            '5B7190',
+            '578983',
+            'B18555',
+            'DB416F',
+            '642FCB',
+            '2F64CC',
+            '54A27A',
+            'D7AD01',
+            'DF5712',
+            '9F699F',
+            '6E89AE',
+        ]
+        
+    function radioVal(groupName){
+      return $('input[name=' + groupName + ']')
+        .filter(function(){ return this.checked; }).val()
+    }
+    function radioChange(groupName, changed){
+      changed()
+      return $('input[name=' + groupName + ']')
+        .click(changed)
+    }
+    function liForColor(color){
+      var val = radioVal('displayedText')
+      var displayText = val == 'colorCode' ? color : $('#displayedTextCustom').val() || '&nbsp;'
+      var span = '<span style="background-color: #' + color + '">' + displayText + '</span>'
+      return '<li>' + span + '</li>'
+    }
+    function renderColorList(){
+      $('#colorList')
+        .html(colors.map(liForColor).join(""))
+        .sortable()
+        .disableSelection()
+    }
+    $(function(){
+      renderColorList()
+      $('#clear').click(function(e){
+        e.preventDefault()
+        $('#colorList').html('')
+      })
+      $('#newColor').jPicker({
+        position: {x: 'center', y: 'bottom'},
+        window: {expandable: true},
+        images: {clientPath: 'jPicker/images/'}})
+      $('.jPicker_container')
+        .css({top: 40})
+      $('#addColor').submit(function(e){
+        e.preventDefault()
+        $(liForColor($("#newColor").val())).appendTo('#colorList')
+      })
+      $('#textColor').keyup(function(e){
+        $('#colorList').css({color: '#' + $(this).val()})
+      })
+      $('input[name=displayedText]')
+        .click(renderColorList)
+      $('#displayedTextCustom').keyup(renderColorList)
+      radioChange('displayedText', function(){
+        var val = radioVal('displayedText')
+        $('#displayedTextCustom').attr('disabled', 
+           val == 'colorCode')
+        if (val != 'colorCode')
+          $('#displayedTextCustom').focus()
+      })
+      $('#fontFamily').keyup(function(e){
+        $('#colorList').css({fontFamily: $(this).val()})
+      })
+      $('#fontSize').keyup(function(e){
+        $('#colorList').css({fontSize: $(this).val()})
+      })
+    })
+    --></script>
+  </head>
+  <body>
+    <h1>ColorCode Lineup</h1>
+    <div id="controls">
+      <form id="addColor">
+        <p>
+          <label>New color: </label>
+          <input id="newColor" type="text" name="newColor"/>
+          <input type="submit" name="submit" value="Add Color"/>
+          <button id="clear">Clear all</button>
+        </p>
+      </form>
+      <p>
+        <label>Text color: </label>
+        <input id="textColor" type="text" name="textColor" value="000000"/>
+      </p>
+      <p>
+        <label>Displayed Text: </label>
+        <label>Color Code</label>
+        <input type="radio" name="displayedText" value="colorCode"
+          checked="checked"/>
+        <label>Other</label>
+        <input type="radio" name="displayedText" value="other"/>
+        <input id="displayedTextCustom" type="text" name="diplayedTextCustom"/>
+      </p>
+      <p>
+        <label>Font Family: </label>
+        <input id="fontFamily" type="text" name="fontFamily" value="Arial"/>
+      </p>
+      <p>
+        <label>Font Size: </label>
+        <input id="fontSize" type="text" name="fontSize" value="1em"/>
+      </p>
+    </div>
+    <ul id="colorList">
+    </ul>
+
+  </body>
+</html>
