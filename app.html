@@ -48,6 +48,9 @@
       background-color: #dddddd;
       margin: 1em 0;
     }
+    .info{
+      color: #888888;
+    }
     </style>
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="ecma5array.js"></script>
@@ -56,26 +59,26 @@
     <script type="text/javascript"><!--
     
     var colors = [
-            'CC2B2B',
-            '953F95',
-            '285795',
-            '1CA998',
-            '0C9314',
-            'A8A80A',
-            'EF8601',
-            '9F6B62',
-            '5B7190',
-            '578983',
-            'B18555',
-            'DB416F',
-            '642FCB',
-            '2F64CC',
-            '54A27A',
-            'D7AD01',
-            'DF5712',
-            '9F699F',
-            '6E89AE',
-        ]
+    'e69595', 
+    'ca9dca', 
+    '96aecd', 
+    'ed98b3', 
+    'b196e6', 
+    '90ace5', 
+    '8dd5cc', 
+    '97c9af', 
+    '87cc8a', 
+    'bada8c', 
+    'd6d689', 
+    'f0cd79', 
+    'efab87', 
+    'd4b5b3', 
+    'cbb3cb', 
+    'abb8be', 
+    'bac6d6', 
+    'abc6bf', 
+    'c2c0a3'
+    ]
         
     function radioVal(groupName){
       return $('input[name=' + groupName + ']')
@@ -92,14 +95,35 @@
       var span = '<span style="background-color: #' + color + '">' + displayText + '</span>'
       return '<li>' + span + '</li>'
     }
+    
+    function genOutput(){
+      $('#output')
+        .text('[\n' + colors.map(function(color){ return "0x" + color; }).join(', \n') + '\n]')
+      
+    }
+    function colorsFromLi(){
+      return $.makeArray($('#colorList li span').map(function(){
+        return this.getAttribute('style')
+          .match(/background-color: #(.{6})/)[1];
+        }))
+    }
     function renderColorList(){
       $('#colorList')
         .html(colors.map(liForColor).join(""))
-        .sortable()
+        .sortable({
+          stop: function(){
+            colors = colorsFromLi()
+            genOutput()
+          }
+        })
         .disableSelection()
-      $('#output')
-        .text('[\n' + colors.map(function(color){ return "0x" + color; }).join(', \n') + '\n]')
+      genOutput()
     }
+    
+    function randInt(max){
+      return Math.floor(Math.random() * max)
+    }
+    
     $(function(){
       renderColorList()
       $('#clear').click(function(e){
@@ -136,6 +160,17 @@
       })
       $('#fontSize').keyup(function(e){
         $('#colorList').css({fontSize: $(this).val()})
+      })
+      $('#shuffle').click(function(){
+        for (var i = 0; i < colors.length * 2; i++){
+          var ind1 = randInt(colors.length)
+          var ind2 = randInt(colors.length)
+          if (ind1 == ind2) continue
+          var temp = colors[ind2]
+          colors[ind2] = colors[ind1]
+          colors[ind1] = temp
+        }
+        renderColorList()
       })
     })
     --></script>
@@ -176,6 +211,10 @@
     <ul id="colorList">
     </ul>
     <div class="clear"></div>
+    <p class="info">Drag and drop to rearrange the color lineup. Or you can
+      <button id="shuffle">Shuffle</button>
+    </p>
+    
     <pre id="output"></pre>
   </body>
 </html>
