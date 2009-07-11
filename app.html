@@ -40,6 +40,14 @@
     #controls{
       padding: 0 0.5em;
     }
+    .clear{
+      clear: both;
+    }
+    #output{
+      padding: 1em;
+      background-color: #dddddd;
+      margin: 1em 0;
+    }
     </style>
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="ecma5array.js"></script>
@@ -89,12 +97,15 @@
         .html(colors.map(liForColor).join(""))
         .sortable()
         .disableSelection()
+      $('#output')
+        .text('[\n' + colors.map(function(color){ return "0x" + color; }).join(', \n') + '\n]')
     }
     $(function(){
       renderColorList()
       $('#clear').click(function(e){
         e.preventDefault()
-        $('#colorList').html('')
+        colors = []
+        renderColorList()
       })
       $('#newColor').jPicker({
         position: {x: 'center', y: 'bottom'},
@@ -104,7 +115,8 @@
         .css({top: 40})
       $('#addColor').submit(function(e){
         e.preventDefault()
-        $(liForColor($("#newColor").val())).appendTo('#colorList')
+        colors.push($("#newColor").val())
+        renderColorList()
       })
       $('#textColor').keyup(function(e){
         $('#colorList').css({color: '#' + $(this).val()})
@@ -163,6 +175,7 @@
     </div>
     <ul id="colorList">
     </ul>
-
+    <div class="clear"></div>
+    <pre id="output"></pre>
   </body>
 </html>
